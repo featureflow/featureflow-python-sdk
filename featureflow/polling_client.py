@@ -20,7 +20,7 @@ class PollingClient:
             'X-Featureflow-Client': 'PythonClient/1.0.0'
         }
 
-        self._polling_loop()
+        #self._polling_loop()
 
     def poll(self):
         """Polling data from API periodically"""

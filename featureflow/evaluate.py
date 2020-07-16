@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from feature import Feature
+from .feature import Feature
 
 
 class Evaluate:
@@ -19,8 +19,6 @@ class Evaluate:
             return self._feature.off_variant_key
 
         for rule in self._feature.rules:
-            if rule.match(user):
-               variant_value = self._feature.get_variant_value(user)
-               return rule.get_variant_split_key(variant_value)
-
-
+            if rule.match(self._user):
+                variant_value = self._feature.get_variant_value(self._user)
+                return rule.get_variant_split_key(variant_value)

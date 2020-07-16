@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from hashlib import sha1
-from rule import Rule
-
 import base64
+
+from .rule import Rule
 
 
 class Feature:
@@ -21,6 +21,10 @@ class Feature:
         return self._feature.get('key', False)
 
     @property
+    def off_variant_key(self):
+        return self._feature.get('offVariantKey', 'off')
+
+    @property
     def variant_salt(self):
         return self._feature.get('variantSalt', False)
 
@@ -33,8 +37,8 @@ class Feature:
         return int(self._calculate_hash(user), 16) % 100 + 1
 
     def _calculate_hash(self, user):
-        sha = sha1(b"{}:{}:{}".format(self._feature.variant_salt,
-                                      self._feature.key,
-                                      user.key)).digest()
+        sha = sha1("{}:{}:{}".format(self.variant_salt,
+                                     self.key,
+                                     user.key).encode()).digest()
 
         return base64.encodebytes(sha)[0:15]

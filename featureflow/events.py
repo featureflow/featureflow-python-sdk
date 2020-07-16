@@ -23,7 +23,7 @@ class Events:
 
         self._events = []
 
-        self._events_loop()
+        #self._events_loop()
 
     def register_features(self, features):
         """Registers new features on the server"""
