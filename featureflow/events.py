@@ -25,7 +25,7 @@ class Events:
 
         self._events_loop()
 
-    def register(self, features):
+    def register_features(self, features):
         """Registers new features on the server"""
         if features != []:
             requests.put(self._register_url, headers=self._headers, json=features)
