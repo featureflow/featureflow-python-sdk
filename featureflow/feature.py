@@ -41,4 +41,4 @@ class Feature:
                                      self.key,
                                      user.key).encode()).digest()
 
-        return base64.encodebytes(sha)[0:15]
+        return base64.b16encode(sha)[0:15]

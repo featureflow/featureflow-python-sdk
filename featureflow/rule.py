@@ -30,7 +30,7 @@ class Rule:
         if user is None:
             return False
 
-        attributes = user.attributes + user.session_attributes
+        attributes = user.attributes.update(user.session_attributes)
 
         for condition in self.conditions:
             result = False
@@ -47,6 +47,6 @@ class Rule:
         """docstring for get_variant_split_key"""
         percent = 0
         for vs in self.variant_splits:
-            percent += vs.split
+            percent += vs['split']
             if percent >= variant_value:
-                return vs.variant_key
+                return vs['variantKey']

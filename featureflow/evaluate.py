@@ -14,6 +14,22 @@ class Evaluate:
 
         self._evaluated_variant = self._calculate_variant()
 
+    def value(self):
+        """Returns value of evaluated variant"""
+        return self._evaluated_variant
+
+    def is_(self, variant):
+        """docstring for is"""
+        return self._evaluated_variant == variant
+
+    def isOn(self):
+        """docstring for isOn"""
+        return self.is_('on')
+
+    def isOff(self):
+        """docstring for isOff"""
+        return self.is_('off')
+
     def _calculate_variant(self):
         if not self._feature.enabled:
             return self._feature.off_variant_key
