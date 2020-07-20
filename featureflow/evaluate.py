@@ -18,7 +18,7 @@ class Evaluate:
 
     def value(self):
         """Returns value of evaluated variant"""
-        self._client.evaluate([Event(feature_key=self._feature.key,
+        self._client.events_client.evaluate([Event(feature_key=self._feature.key,
                                      evaluated_variant=self._evaluated_variant,
                                      user=self._user
                                      ).toJSON()
@@ -28,7 +28,7 @@ class Evaluate:
 
     def is_(self, variant):
         """docstring for is"""
-        self._client.evaluate([Event(feature_key=self._feature.key,
+        self._client.events_client.evaluate([Event(feature_key=self._feature.key,
                                      evaluated_variant=self._evaluated_variant,
                                      expected_variant=variant,
                                      user=self._user

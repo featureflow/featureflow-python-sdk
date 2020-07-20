@@ -1,16 +1,18 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from threading import Thread
 import time
 import requests
 
 
-class PollingClient:
+class PollingClient(Thread):
     API_ENDPOINT = "https://app.featureflow.io/api/sdk/v1/features"
     POLLING_INTERVAL = 30
 
     def __init__(self, client):
         """Constructor for PollingClient"""
+        Thread.__init__(self)
         self._client = client
         self._api_key = client.api_key
 
@@ -19,8 +21,6 @@ class PollingClient:
             'Authorization': 'Bearer {}'.format(self._api_key),
             'X-Featureflow-Client': 'PythonClient/1.0.0'
         }
-
-        #self._polling_loop()
 
     def poll(self):
         """Polling data from API periodically"""
@@ -31,7 +31,7 @@ class PollingClient:
             print("PollingClient got error from API code {} message {}".format(
                 response.status_code, response.reason))
 
-    def _polling_loop(self):
+    def run(self):
         while True:
             self.poll()
             time.sleep(self.POLLING_INTERVAL)

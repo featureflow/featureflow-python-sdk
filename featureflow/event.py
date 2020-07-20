@@ -1,6 +1,3 @@
-import json
-
-
 class Event:
     def __init__(self, **event):
         """docstring for __init__"""
@@ -11,11 +8,9 @@ class Event:
 
     def toJSON(self):
         """docstring for toJSON"""
-        data = {
+        return {
             'featureKey': self.feature_key,
             'evaluatedVariant': self.evaluated_variant,
             'expectedVariant': self.expected_variant,
-            'user': self.user.toJSONData(),
+            'user': self.user.toJSON() if self.user is not None else None,
         }
-
-        return json.encode(data)

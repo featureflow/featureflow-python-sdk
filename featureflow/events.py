@@ -1,18 +1,21 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from threading import Thread
 import time
 import requests
 
 
-class Events:
+class Events(Thread):
     API_BASE = "https://app.featureflow.io/api/sdk/v1"
     POLLING_INTERVAL = 30
+    MAX_QUEUE_LENGTH = 10000
     _events_url = "{}/events".format(API_BASE)
     _register_url = "{}/register".format(API_BASE)
 
     def __init__(self, client):
         """Constructor for Events service"""
+        Thread.__init__(self)
         self._client = client
 
         self._headers = {
@@ -22,8 +25,6 @@ class Events:
         }
 
         self._events = []
-
-        #self._events_loop()
 
     def register_features(self, features):
         """Registers new features on the server"""
@@ -39,11 +40,15 @@ class Events:
     def _publish_events(self):
         """Publishes events queue to server"""
         if self._events != []:
-            print("Submitting {} events".format(len(self._events)))
-            requests.post(self._events_url, headers=self._headers, json=self._events)
+            print("Submitting {} events".format(self._events))
+            resp = requests.post(self._events_url,
+                                 headers=self._headers,
+                                 json=self._events)
+
+            print("Response: {}".format(resp.text))
             self._events = []
 
-    def _events_loop(self):
+    def run(self):
         """docstring for _events_loop"""
         while True:
             self._publish_events()

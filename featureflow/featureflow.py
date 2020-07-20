@@ -12,12 +12,15 @@ class Featureflow:
         """docstring for __init__"""
         self.api_key = api_key
         self._polloing_client = PollingClient(self)
-        self._events_client = Events(self)
+        self.events_client = Events(self)
+
+        self._polloing_client.start()
+        self.events_client.start()
 
         self._features = {}
 
         if with_features != []:
-            self._events_client.register_features(with_features)
+            self.events_client.register_features(with_features)
 
     def update_features(self, features):
         self._features = features

@@ -9,7 +9,7 @@ class User:
         self.attributes = user.get('attributes', {})
         self.session_attributes = user.get('sessionAttributes', {})
 
-    def toJSONData(self):
+    def toJSON(self):
         """docstring for toJSON"""
         return {
             'key': self.key,
