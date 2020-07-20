@@ -23,4 +23,4 @@ class Featureflow:
         self._features = features
 
     def evaluate(self, feature_key, user=None):
-        return Evaluate(self._features.get(feature_key, {}), user)
+        return Evaluate(self, self._features.get(feature_key, {}), user)

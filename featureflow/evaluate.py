@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from .feature import Feature
+from .event import Event
 
 
 class Evaluate:
     DEFAULT_FEATURE_VARIANT = "off"
 
-    def __init__(self, feature, user):
+    def __init__(self, client, feature, user):
         """docstring for __init__"""
+        self._client = client
         self._feature = Feature(feature)
         self._user = user
 
@@ -16,10 +18,22 @@ class Evaluate:
 
     def value(self):
         """Returns value of evaluated variant"""
+        self._client.evaluate([Event(feature_key=self._feature.key,
+                                     evaluated_variant=self._evaluated_variant,
+                                     user=self._user
+                                     ).toJSON()
+                               ])
+
         return self._evaluated_variant
 
     def is_(self, variant):
         """docstring for is"""
+        self._client.evaluate([Event(feature_key=self._feature.key,
+                                     evaluated_variant=self._evaluated_variant,
+                                     expected_variant=variant,
+                                     user=self._user
+                                     ).toJSON()
+                               ])
         return self._evaluated_variant == variant
 
     def isOn(self):
