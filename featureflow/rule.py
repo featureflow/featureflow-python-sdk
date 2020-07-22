@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from .condition import Condition
+
 
 class Rule:
     def __init__(self, rule):
@@ -14,7 +16,7 @@ class Rule:
     @property
     def conditions(self):
         audience = self._rule.get('audience', {})
-        return audience.get('conditions', None)
+        return [Condition(c) for c in audience.get('conditions', [])]
 
     @property
     def variant_splits(self):
@@ -24,7 +26,7 @@ class Rule:
         if self.default:
             return True
 
-        if self.conditions is None:
+        if self.conditions is []:
             return True
 
         if user is None:

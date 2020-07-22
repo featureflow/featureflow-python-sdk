@@ -6,7 +6,7 @@ import re
 
 
 class Condition:
-    def __init(self, **args):
+    def __init__(self, **args):
         """docstring for __init"""
         self.target = args.get('target', None)
         self.operator = args.get('operator', None)
@@ -36,23 +36,23 @@ class Condition:
             return attribute not in self.values
 
         if self.operator == "greaterThan" and type(attribute) in [int, float]:
-            return attribute > self.values
+            return attribute > self.values[0]
 
         if self.operator == "lessThan" and type(attribute) in [int, float]:
-            return attribute < self.values
+            return attribute < self.values[0]
 
         if self.operator == "greaterThanOrEqual" and type(attribute) in [int, float]:
-            return attribute >= self.values
+            return attribute >= self.values[0]
 
         if self.operator == "lessThanOrEqual" and type(attribute) in [int, float]:
-            return attribute <= self.values
+            return attribute <= self.values[0]
 
         if self.operator == "after" and type(attribute) == str:
-            first = datetime.fromisoformat(attribute)
-            second = datetime.fromisoformat(self.values[0])
+            first = datetime.fromisoformat(self.values[0])
+            second = datetime.fromisoformat(attribute)
             return first > second
 
         if self.operator == "before" and type(attribute) == str:
-            first = datetime.fromisoformat(attribute)
-            second = datetime.fromisoformat(self.values[0])
+            first = datetime.fromisoformat(self.values[0])
+            second = datetime.fromisoformat(attribute)
             return first < second
