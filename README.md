@@ -16,7 +16,7 @@ The SDK is available on ![pypi][pypi-url].
 You can either add it as a dependency or install it globally.
 
 ```
-python -m pip install featureflow
+python -m pip install featureflow-sdk
 ```
 
 ## Usage
