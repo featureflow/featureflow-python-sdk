@@ -20,7 +20,7 @@ python -m pip install featureflow
 ```
 
 ## Usage
-Here is a simple example of running your feature that prints "I'm enables" on the screen.
+Here is a simple example of running your feature that prints "I'm enabled" on the screen.
 ```python
 api_key = "<your-javascript-environment-sdk-key>"
 
@@ -29,7 +29,7 @@ def evaluate_my_feature(user):
 
         if featureflow.evaluate(:'some-cool-feature', user).isOn():
             maybe_evaluate_my_feature()
-            print("Feature evaluated")
+            print("I'm enabled")
 ```
 
 [py-url]: https://pypi.org/project/featureflow/
