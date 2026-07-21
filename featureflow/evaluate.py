@@ -15,26 +15,32 @@ class Evaluate:
         self._user = user
 
         self._evaluated_variant = self._calculate_variant()
+        self._reported = set()
 
     def value(self):
         """Returns value of evaluated variant"""
-        self._client.events_client.evaluate([Event(feature_key=self._feature.key,
-                                     evaluated_variant=self._evaluated_variant,
-                                     user=self._user
-                                     ).toJSON()
-                               ])
-
+        self._report(None)
         return self._evaluated_variant
 
     def is_(self, variant):
         """docstring for is"""
+        self._report(variant)
+        return self._evaluated_variant == variant
+
+    def _report(self, expected_variant):
+        """Sends an evaluation event, at most once per distinct expected_variant
+        -- repeated calls to value()/isOn()/isOff() on the same Evaluate instance
+        would otherwise each fire a duplicate event."""
+        if expected_variant in self._reported:
+            return
+        self._reported.add(expected_variant)
+
         self._client.events_client.evaluate([Event(feature_key=self._feature.key,
                                      evaluated_variant=self._evaluated_variant,
-                                     expected_variant=variant,
+                                     expected_variant=expected_variant,
                                      user=self._user
                                      ).toJSON()
                                ])
-        return self._evaluated_variant == variant
 
     def isOn(self):
         """docstring for isOn"""

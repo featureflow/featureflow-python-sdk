@@ -87,8 +87,6 @@ def evaluate():
 
     user = build_user(user_id, role, tier)
     evaluated = client.evaluate(feature, user)
-    # .value(), .is_(), .isOn() and .isOff() each independently send an evaluation
-    # event -- call only one per request here or you'll multiply event volume.
     value = evaluated.value()
 
     return jsonify(

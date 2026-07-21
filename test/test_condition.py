@@ -122,8 +122,11 @@ class ConditionTest(unittest.TestCase):
 
         val = fake.date()
 
-        val_true = fake.date(end_datetime=date.fromisoformat(val))
-        val_false = fake.date_between(start_date=date.fromisoformat(val)).isoformat()
+        # 'before' means the attribute is earlier than the target, so a
+        # true match needs a target *after* val and a false match a target
+        # at-or-before val.
+        val_true = fake.date_between(start_date=date.fromisoformat(val)).isoformat()
+        val_false = fake.date(end_datetime=date.fromisoformat(val))
 
         condition = Condition(operator=operator, values=values(value=val_true))
         self.assertTrue(condition.evaluate(val))
@@ -138,8 +141,11 @@ class ConditionTest(unittest.TestCase):
 
         val = fake.date()
 
-        val_true = fake.date_between(start_date=date.fromisoformat(val)).isoformat()
-        val_false = fake.date(end_datetime=date.fromisoformat(val))
+        # 'after' means the attribute is later than the target, so a true
+        # match needs a target *before* val and a false match a target
+        # at-or-after val.
+        val_true = fake.date(end_datetime=date.fromisoformat(val))
+        val_false = fake.date_between(start_date=date.fromisoformat(val)).isoformat()
 
         condition = Condition(operator=operator, values=values(value=val_true))
         self.assertTrue(condition.evaluate(val))
@@ -152,7 +158,7 @@ class ConditionTest(unittest.TestCase):
         """Test 'greaterThan' operator for strings"""
         operator = 'greaterThan'
 
-        val = fake.random_int(0, 100)
+        val = fake.random_int(1, 100)
 
         val_true = val - fake.random_int(1, val)
         val_false = val + fake.random_int(0, 100)
@@ -168,7 +174,7 @@ class ConditionTest(unittest.TestCase):
         """Test 'lessThan' operator for strings"""
         operator = 'lessThan'
 
-        val = fake.random_int(0, 100)
+        val = fake.random_int(1, 100)
 
         val_true = val + fake.random_int(1, val)
         val_false = val - fake.random_int(0, 100)
@@ -184,7 +190,7 @@ class ConditionTest(unittest.TestCase):
         """Test 'greaterThanOrEqual' operator for strings"""
         operator = 'greaterThanOrEqual'
 
-        val = fake.random_int(0, 100)
+        val = fake.random_int(1, 100)
 
         val_true = val - fake.random_int(1, val)
         val_false = val + fake.random_int(1, 100)
@@ -205,7 +211,7 @@ class ConditionTest(unittest.TestCase):
         """Test 'lessThanOrEqual' operator for strings"""
         operator = 'lessThanOrEqual'
 
-        val = fake.random_int(0, 100)
+        val = fake.random_int(1, 100)
 
         val_true = val + fake.random_int(1, val)
         val_false = val - fake.random_int(1, 100)

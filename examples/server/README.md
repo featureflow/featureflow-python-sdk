@@ -27,11 +27,6 @@ Open http://127.0.0.1:3456/ -- or hit the JSON endpoints directly:
   and reports events against `https://app.featureflow.io`. There's no way to point
   this example at staging, and no "disable events" switch either: every
   `/api/evaluate*` request here sends a real evaluation event to your account.
-- `.value()`, `.is_()`, `.isOn()`, and `.isOff()` on the object returned by
-  `evaluate()` each *independently* send an evaluation event -- they don't share
-  or memoize one. `/api/evaluate` only calls `.value()` once and derives
-  `isOn`/`isOff` from the returned string, so one page action fires one event,
-  not three. Keep that in mind if you build on top of this example.
 - The app reads `client._features` (a private attribute) to list known feature
   keys and drive "evaluate all" -- the SDK doesn't expose a public accessor for
   the loaded feature set yet.

@@ -7,7 +7,7 @@ class FeatureRegistration:
 
     def toJSON(self):
         """docstring for toJSON"""
-        self.__dict__
+        return self.__dict__
 
 
 class Variant:
@@ -18,4 +18,4 @@ class Variant:
 
     def toJSON(self):
         """docstring for toJSON"""
-        self.__dict__
+        return self.__dict__
