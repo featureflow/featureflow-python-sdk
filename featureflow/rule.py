@@ -15,8 +15,8 @@ class Rule:
 
     @property
     def conditions(self):
-        audience = self._rule.get('audience', {})
-        return [Condition(c) for c in audience.get('conditions', [])]
+        audience = self._rule.get('audience') or {}
+        return [Condition(**c) for c in audience.get('conditions', [])]
 
     @property
     def variant_splits(self):
@@ -26,21 +26,24 @@ class Rule:
         if self.default:
             return True
 
-        if self.conditions is []:
+        conditions = self.conditions
+
+        if not conditions:
             return True
 
         if user is None:
             return False
 
-        attributes = user.attributes.update(user.session_attributes)
+        attributes = {**user.attributes, **user.session_attributes}
 
-        for condition in self.conditions:
-            result = False
-            for attribute in attributes:
-                if condition.evaluate(attribute):
-                    result = True
+        for condition in conditions:
+            values = attributes.get(condition.target)
+            if values is None:
+                return False
+            if not isinstance(values, list):
+                values = [values]
 
-            if not result:
+            if not any(condition.evaluate(value) for value in values):
                 return False
 
         return True

@@ -21,5 +21,8 @@ setuptools.setup(
         'requests',
         'Faker'
     ],
+    extras_require={
+        'test': ['behave'],
+    },
     python_requires='>=3.6',
 )
