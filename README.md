@@ -32,6 +32,11 @@ def evaluate_my_feature(user):
             print("I'm enabled")
 ```
 
+## Example server
+
+See [examples/server](examples/server) for a small Flask app you can run locally to
+manually test evaluations against your Featureflow account from a browser.
+
 [py-url]: https://pypi.org/project/featureflow/
 [dependency-url]: https://www.featureflow.io
 [dependency-img]: https://www.featureflow.io/wp-content/uploads/2016/12/featureflow-web.png
