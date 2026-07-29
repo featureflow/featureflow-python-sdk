@@ -92,6 +92,34 @@ class ConditionTest(unittest.TestCase):
         condition = Condition(operator=operator, values=values(value=fake.word()))
         self.assertFalse(condition.evaluate(val))
 
+    def test_matches_invalid_regex(self):
+        """Test 'matches' returns False for an uncompilable pattern rather than raising
+
+        The pattern comes from a dashboard-authored targeting rule, so a malformed one
+        is a user's mistake, not a bug here. The contract
+        (featureflow-client-sdk-testbed/CONTRACT.md, "Operators") requires this
+        behaviour: an SDK must degrade rather than take the host application down.
+        re.compile raised re.error here until 2026-07-29."""
+        operator = 'matches'
+
+        patterns = [
+            '[unclosed',
+            '(unbalanced',
+            '*bad-quantifier',
+            'a{2,1}',
+            '(?P<dup>x)(?P<dup>y)',
+        ]
+
+        for pattern in patterns:
+            condition = Condition(operator=operator, values=values(value=pattern))
+            self.assertFalse(condition.evaluate('my-test-value'),
+                             "pattern {!r} should not match".format(pattern))
+
+    def test_matches_non_string_pattern(self):
+        """Test 'matches' returns False when the configured pattern is not a string"""
+        condition = Condition(operator='matches', values=values(value=123))
+        self.assertFalse(condition.evaluate('my-test-value'))
+
     def test_in(self):
         """Test 'in' operator for strings"""
         operator = 'in'

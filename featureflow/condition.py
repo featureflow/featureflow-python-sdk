@@ -59,7 +59,20 @@ class Condition:
             return attribute.endswith(self.values[0])
 
         if self.operator == "matches" and type(attribute) == str:
-            return re.compile(self.values[0]).match(attribute) is not None
+            # The pattern is untrusted configuration, not code: it comes from a
+            # targeting rule somebody typed into the dashboard, so a malformed one
+            # like "[unclosed" is a user's mistake rather than a bug in the SDK. The
+            # contract (featureflow-client-sdk-testbed/CONTRACT.md, "Operators")
+            # therefore requires an invalid regex to return False -- a flag SDK must
+            # degrade rather than take the host application down with it.
+            #
+            # Only the regex failure is caught, never everything: re.error for a
+            # pattern that will not compile, TypeError for a value that is not a
+            # string at all. A genuine bug anywhere else still surfaces.
+            try:
+                return re.compile(self.values[0]).match(attribute) is not None
+            except (re.error, TypeError):
+                return False
 
         if self.operator == "in" and type(attribute) == str:
             return attribute in self.values
