@@ -21,8 +21,26 @@ TEST_TIMEZONE = 'Asia/Tokyo'
 # Floor, not an exact count: 105 scenarios run today. Scenarios are added to the testbed
 # regularly, so this is expected to lag the real total. Raise it when the testbed grows;
 # never lower it to accommodate a sudden drop without first working out where the
-# missing scenarios went.
-MIN_SCENARIOS = 85
+# missing scenarios went. Keep it close to the real total -- the Java SDK's floor sat far
+# enough below its count to stay green through a bump that added fourteen scenarios it
+# never ran.
+MIN_SCENARIOS = 100
+
+# Feature files this SDK deliberately does not symlink into features/, each with the
+# reason. Anything in testbed/gherkin that is neither symlinked nor listed here fails the
+# run -- see _assert_testbed_files_accounted_for.
+UNRUN_TESTBED_FEATURES = {
+    'json_value.feature':
+        'tagged @json-value in the testbed as JS-family-only; this SDK has no jsonValue()',
+    'events.feature':
+        'client-side event summarisation is not implemented in this SDK',
+    'goals.feature':
+        'goal tracking is not implemented in this SDK (SDK-BACKLOG item 7)',
+    'sdk_config.feature':
+        'server-driven SDK config is not implemented in this SDK',
+    'tracked_exposures.feature':
+        'per-flag exposure fidelity is not implemented in this SDK',
+}
 
 # Module-level, not a context attribute: behave pushes a fresh context layer per
 # scenario and pops it afterwards, so anything after_scenario writes to `context` is
@@ -54,6 +72,7 @@ def after_all(context):
     HOOK-ERROR and exits non-zero)."""
     _assert_no_undefined_steps(context)
     _assert_scenario_floor()
+    _assert_testbed_files_accounted_for()
 
 
 def _assert_no_undefined_steps(context):
@@ -92,3 +111,43 @@ def _assert_scenario_floor():
             'probably uninitialised (features/*.feature are symlinks into testbed/gherkin), '
             'or behave.ini tags now exclude far more than intended.'
             % (_scenarios_run, MIN_SCENARIOS))
+
+
+def _assert_testbed_files_accounted_for():
+    """Fail if the testbed gained a feature file that is neither run nor explicitly skipped.
+
+    Neither guard above can see this. The undefined-step check only inspects steps that a
+    loaded feature file referenced, and the floor only notices a total that collapsed --
+    a file that was never symlinked in simply does not exist as far as either is concerned.
+    That is not hypothetical: the Java SDK's include list was missing conditions.feature,
+    so the date-only and invalid-regex scenarios never ran there, the build stayed green,
+    and the omission surfaced only when its scenario count failed to move after a bump.
+
+    Promoting a file from UNRUN_TESTBED_FEATURES to a symlink is then a deliberate act with
+    a visible diff, rather than something that has to be noticed.
+    """
+    gherkin = os.path.join(os.path.dirname(__file__), '..', 'testbed', 'gherkin')
+    if not os.path.isdir(gherkin):
+        raise AssertionError(
+            '%s is missing -- run `git submodule update --init`.' % gherkin)
+
+    present = {name for name in os.listdir(gherkin) if name.endswith('.feature')}
+    if not present:
+        raise AssertionError(
+            'No feature files in %s -- the submodule is probably an empty checkout.' % gherkin)
+
+    here = os.path.dirname(__file__)
+    symlinked = {name for name in os.listdir(here) if name.endswith('.feature')}
+
+    unaccounted = present - symlinked - set(UNRUN_TESTBED_FEATURES)
+    if unaccounted:
+        raise AssertionError(
+            'Testbed feature file(s) %s are neither symlinked into features/ nor listed in '
+            'UNRUN_TESTBED_FEATURES. Add step definitions and the symlink, or record there '
+            'why this SDK does not run them.' % ', '.join(sorted(unaccounted)))
+
+    stale = (symlinked | set(UNRUN_TESTBED_FEATURES)) - present
+    if stale:
+        raise AssertionError(
+            'Feature file(s) %s are symlinked or listed here but no longer exist in the '
+            'testbed -- they were probably renamed upstream.' % ', '.join(sorted(stale)))
